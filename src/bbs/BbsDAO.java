@@ -219,11 +219,9 @@ public class BbsDAO {
         ArrayList<Bbs> list = new ArrayList<Bbs>();
         String SQL="select * from bbs where "+searchCol.trim();
         try {
-            if (searchContent != null && searchContent.equals("") == false) {
-                SQL+=" like '%"+searchContent.trim()+"%' order by bbsID desc";
-            }
+            SQL+=" like '%"+searchContent.trim()+"%' order by bbsID";
+
             PreparedStatement pstmt = conn.prepareStatement(SQL);
-            System.out.println(SQL);
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 Bbs bbs=new Bbs();

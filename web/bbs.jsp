@@ -27,6 +27,45 @@
             text-decoration: none;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script type="text/javascript">
+        var searchRequest=new XMLHttpRequest();
+        function searchFunction(){
+            var searchSub = document.getElementsByName("searchCol")[0];
+            //var index = searchSub.selectedIndex;
+            searchRequest.open("Post", "./bbsSearchServlet?searchSub=" + encodeURIComponent(searchSub.options[searchSub.selectedIndex].value) +
+                "&searchContent=" + encodeURIComponent(document.getElementById("searchContent").value), true);
+            searchRequest.onreadystatechange=searchProcess;
+            searchRequest.send(null);
+        }
+        function searchProcess(){
+            var table=document.getElementById("searchResult");
+            table.innerHTML="";
+            if (searchRequest.readyState == 4 && searchRequest.status == 200) {
+                var object = eval('(' + searchRequest.responseText + ')');
+                var result = object.result;
+                for (var i = 0; i < result.length; i++) {
+                    var row = table.insertRow(0);
+                    var bbsID = result[i][0].value;
+                    for (var j = 0; j < result[i].length; j++) {
+                        var cell = row.insertCell(j);
+                        if(j==1){
+                            var url = '<a href="view.jsp?bbsID=' + bbsID + '">'+result[i][j].value.replace(/\s/g,'&nbsp;').replace(/</g,'&lt;').replace(/>/,'&gt;').replace(/\n/,'<br>')+'</a>';
+                            cell.innerHTML = url ;
+                        }else if (j == 3) {
+                            cell.innerHTML=result[i][j].value.substring(0,11)+result[i][j].value.substring(11,13)+"시"+result[i][j].value.substring(14,16)+"분";
+                        } else
+                            cell.innerHTML = result[i][j].value;
+                    }
+                }
+            }
+        }
+
+        window.onload = function () {
+            searchFunction();
+        };
+    </script>
 </head>
 <body>
 <%
@@ -96,16 +135,16 @@
     </div>
 </nav>
 <div class="container">
-    <dic class="row">
-        <form method="post" action="searchBbs.jsp">
+    <div class="row">
+        <div>
             <select style="width: 10%; float: left;" class="form-control" name="searchCol">
                 <option value="bbsTitle">제목</option>
                 <option value="userID">작성자</option>
             </select>
-            <input class="form-control" style="width: 80%; float: left;" type="text" placeholder="검색어 입력" maxlength="100" name="searchContent">
-            <button type="submit" class="btn btn-success">검색</button>
-        </form>
-    </dic>
+            <input class="form-control" style="width: 80%; float: left;" type="text" placeholder="검색어 입력" maxlength="100" id="searchContent" onkeyup="searchFunction()">
+            <button type="button" class="btn btn-success" onclick="searchFunction();">검색</button>
+        </div>
+    </div>
 </div>
 
 <div class="container">
@@ -121,25 +160,24 @@
                     <th style="background-color:#eeeeee; text-align: center;">댓글 수</th>
                 </tr>
             </thead>
-            <tbody>
             <%
                 BbsDAO bbsDAO = new BbsDAO();
                 ArrayList<Bbs> list = bbsDAO.getList(pageNumber);
                 CommentDAO commentDAO=new CommentDAO();
-                for (int i = 0; i < list.size(); i++) {
             %>
-                <tr>
-                <td><%=list.get(i).getBbsID()%></td>
-                <td><a href="view.jsp?bbsID=<%= list.get(i).getBbsID()%>"><%=list.get(i).getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>")%></a</td>
-                <td><%=list.get(i).getUserID()%></td>
-                <td><%=list.get(i).getBbsDate().substring(0,11)+list.get(i).getBbsDate().substring(11,13)+"시"+list.get(i).getBbsDate().substring(14,16)+"분"%></td>
-                <td><%=list.get(i).getBbsHits()%></td>
-                <td><%=commentDAO.countComment(list.get(i).getBbsID())%></td>
-                </tr>
-            <%
-                }
-            %>
-
+            <tbody id="searchResult">
+<%--                for (int i = 0; i < list.size(); i++) {--%>
+<%--                <tr>--%>
+<%--                <td><%=list.get(i).getBbsID()%></td>--%>
+<%--                <td><a href="view.jsp?bbsID=<%= list.get(i).getBbsID()%>"><%=list.get(i).getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>")%></a</td>--%>
+<%--                <td><%=list.get(i).getUserID()%></td>--%>
+<%--                <td><%=list.get(i).getBbsDate().substring(0,11)+list.get(i).getBbsDate().substring(11,13)+"시"+list.get(i).getBbsDate().substring(14,16)+"분"%></td>--%>
+<%--                <td><%=list.get(i).getBbsHits()%></td>--%>
+<%--                <td><%=commentDAO.countComment(list.get(i).getBbsID())%></td>--%>
+<%--                </tr>--%>
+<%--            <%--%>
+<%--                }--%>
+<%--            %>--%>
             </tbody>
         </table>
         <%
@@ -157,9 +195,6 @@
         <a href="write.jsp" class="btn btn-primary pull-right">글쓰기</a>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="js/bootstrap.js"></script>
-
 </body>
 </html>
 

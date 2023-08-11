@@ -135,7 +135,7 @@
                 <tbody>
                     <tr>
                         <td style="width:20%;">글 제목</td>
-                        <td colspan="2"><%=bbs.getBbsTitle()%></td>
+                        <td colspan="2"><%=bbs.getBbsTitle().replaceAll(" ","&nbsp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","<br>")%></td>
                     </tr>
                     <tr>
                         <td >작성자</td>
@@ -203,7 +203,15 @@
 %>
 <div class="container" style="padding-top:60px;">
     <div class="row">
-    <form method="post" enctype="utf-8" action="commentAction.jsp?bbsID=<%=bbsID%>">
+<%--    <form method="post" enctype="utf-8" action="commentAction.jsp?bbsID=<%=bbsID%>">--%>
+<%--        <table class="table table-striped" style="text-align: center;  border: 1px solid #dddddd">--%>
+<%--            <tr>--%>
+<%--                <td style="border-bottom:none;" valign="middle"><br><br><%=userID %></td>--%>
+<%--                <td><textarea style="height:100px;" class="form-control" placeholder="상대방을 존중하는 댓글을 남깁시다." name = "commentContent"></textarea></td>--%>
+<%--                <td><input style="height:100px; border-bottom: none;" type="submit" class="btn-primary pull" value="댓글 작성"></td>--%>
+<%--            </tr>--%>
+<%--        </table>--%>
+<%--    </form>--%>
         <table class="table table-striped" style="text-align: center;  border: 1px solid #dddddd">
             <tr>
                 <td style="border-bottom:none;" valign="middle"><br><br><%=userID %></td>
@@ -211,7 +219,6 @@
                 <td><input style="height:100px; border-bottom: none;" type="submit" class="btn-primary pull" value="댓글 작성"></td>
             </tr>
         </table>
-    </form>
     </div>
 </div>
 <%
@@ -222,10 +229,10 @@
         <table class="table table-striped" style="text-align: center; border: 1px solid #dddddd">
             <thead>
             <tr>
-                <th colspan="3" style="background-color:#eeeeee; text-align: center; ">댓글</th>
+                <th  style="background-color:#eeeeee; text-align: center; ">댓글</th>
             </tr>
             </thead>
-            <tbody style="width: 100px;">
+            <tbody>
             <%
                 for (int i = 0; i < list.size(); i++) {
             %>
